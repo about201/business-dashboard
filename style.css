@@ -1,11 +1,12 @@
 body { font-family: 'Inter', sans-serif; }
-h1, h2, h3, .stat-value { font-family: 'Plus Jakarta Sans', sans-serif; }
+h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
 
 .stat-card {
     background: white;
     padding: 1.5rem;
     border-radius: 1.25rem;
     border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .stat-label {
@@ -13,56 +14,71 @@ h1, h2, h3, .stat-value { font-family: 'Plus Jakarta Sans', sans-serif; }
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #64748b;
     margin-bottom: 0.5rem;
 }
-
-.stat-value { font-weight: 700; }
 
 .input-field label {
     display: block;
     font-size: 0.8rem;
     font-weight: 600;
     color: #475569;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.25rem;
 }
 
-.input-field input, .padding-select {
+.input-field input, .custom-select {
     width: 100%;
-    padding: 0.75rem;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
+    padding: 0.7rem;
+    border: 1.5px solid #e2e8f0;
     border-radius: 0.75rem;
-    transition: all 0.2s;
+    background: #f8fafc;
+    transition: 0.2s;
 }
 
-.input-field input:focus, .padding-select:focus {
+.input-field input:focus, .custom-select:focus {
     outline: none;
     border-color: #6366f1;
-    background-color: white;
+    background: white;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
+/* KARTU STOK DASHBOARD */
+.stock-badge {
+    background: white;
+    padding: 1rem;
+    border-radius: 1rem;
+    border: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+.stock-badge span {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    display: block;
+}
+
+.stock-badge div {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.low-stock {
+    background: #fff1f2;
+    border-color: #fecdd3;
+}
+
+.low-stock div { color: #e11d48; }
+
 .btn-delete {
     padding: 0.35rem 0.75rem;
-    background-color: #fff1f2;
+    background: #fff1f2;
     color: #e11d48;
     border-radius: 0.5rem;
     font-size: 0.7rem;
     font-weight: 700;
-    text-transform: uppercase;
-    transition: all 0.2s;
+    transition: 0.2s;
 }
 
-.btn-delete:hover {
-    background-color: #e11d48;
-    color: white;
-}
-
-.padding-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 1rem;
-}
+.btn-delete:hover { background: #e11d48; color: white; }
