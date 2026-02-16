@@ -6,11 +6,10 @@ h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
     padding: 1.5rem;
     border-radius: 1.25rem;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .stat-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -19,66 +18,23 @@ h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
 
 .input-field label {
     display: block;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    color: #475569;
-    margin-bottom: 0.25rem;
+    color: #64748b;
+    margin-bottom: 0.3rem;
 }
 
 .input-field input, .custom-select {
     width: 100%;
-    padding: 0.7rem;
+    padding: 0.75rem;
     border: 1.5px solid #e2e8f0;
     border-radius: 0.75rem;
     background: #f8fafc;
-    transition: 0.2s;
+    font-size: 0.875rem;
 }
 
 .input-field input:focus, .custom-select:focus {
     outline: none;
     border-color: #6366f1;
     background: white;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
-
-/* KARTU STOK DASHBOARD */
-.stock-badge {
-    background: white;
-    padding: 1rem;
-    border-radius: 1rem;
-    border: 1px solid #e2e8f0;
-    text-align: center;
-}
-
-.stock-badge span {
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: #94a3b8;
-    text-transform: uppercase;
-    display: block;
-}
-
-.stock-badge div {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #1e293b;
-}
-
-.low-stock {
-    background: #fff1f2;
-    border-color: #fecdd3;
-}
-
-.low-stock div { color: #e11d48; }
-
-.btn-delete {
-    padding: 0.35rem 0.75rem;
-    background: #fff1f2;
-    color: #e11d48;
-    border-radius: 0.5rem;
-    font-size: 0.7rem;
-    font-weight: 700;
-    transition: 0.2s;
-}
-
-.btn-delete:hover { background: #e11d48; color: white; }
