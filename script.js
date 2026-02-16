@@ -1,0 +1,93 @@
+// Konfigurasi Firebase Anda
+const firebaseConfig = {
+    apiKey: "AIzaSyCSysTc__gQBBYtVnkm0aCvUFfknBo5mhk",
+    authDomain: "business-dashboard-bc41a.firebaseapp.com",
+    databaseURL: "https://business-dashboard-bc41a-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "business-dashboard-bc41a",
+    storageBucket: "business-dashboard-bc41a.firebasestorage.app",
+    messagingSenderId: "220314664034",
+    appId: "1:220314664034:web:9ef49b3a65e7fde0fbe53b",
+    measurementId: "G-PY4H3JSRQ4"
+};
+
+// Inisialisasi Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const btnSave = document.getElementById('btnSave');
+
+// FUNGSI SIMPAN DATA
+btnSave.onclick = function() {
+    const name = document.getElementById('itemName').value;
+    const qIn = parseInt(document.getElementById('qtyIn').value) || 0;
+    const qOut = parseInt(document.getElementById('qtyOut').value) || 0;
+    const mIn = parseInt(document.getElementById('moneyIn').value) || 0;
+    const mOut = parseInt(document.getElementById('moneyOut').value) || 0;
+
+    if (!name) return alert("Silakan pilih barang terlebih dahulu!");
+
+    db.ref('reports').push({
+        name: name,
+        qtyIn: qIn,
+        qtyOut: qOut,
+        moneyIn: mIn,
+        moneyOut: mOut,
+        timestamp: Date.now()
+    }).then(() => {
+        // Reset Inputs
+        document.getElementById('itemName').selectedIndex = 0;
+        document.getElementById('qtyIn').value = 0;
+        document.getElementById('qtyOut').value = 0;
+        document.getElementById('moneyIn').value = 0;
+        document.getElementById('moneyOut').value = 0;
+    });
+};
+
+// FUNGSI HAPUS DATA
+function deleteData(id) {
+    if (confirm("Hapus data ini secara permanen dari database?")) {
+        db.ref('reports/' + id).remove();
+    }
+}
+
+// RENDER & KALKULASI REAL-TIME
+db.ref('reports').on('value', (snapshot) => {
+    const data = snapshot.val();
+    const tableBody = document.getElementById('inventoryTable');
+    tableBody.innerHTML = '';
+
+    let totalModal = 0;
+    let totalUangKeluar = 0;
+
+    if (data) {
+        // Balik urutan agar data terbaru ada di atas
+        const keys = Object.keys(data).reverse();
+        
+        keys.forEach(key => {
+            const item = data[key];
+            totalModal += item.moneyIn;
+            totalUangKeluar += item.moneyOut;
+
+            const row = `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-4 font-semibold text-slate-700">${item.name}</td>
+                    <td class="p-4 text-indigo-600 font-bold">+${item.qtyIn}</td>
+                    <td class="p-4 text-rose-500 font-bold">-${item.qtyOut}</td>
+                    <td class="p-4 text-xs">
+                        <div class="text-emerald-600">In: ${item.moneyIn.toLocaleString('id-ID')}</div>
+                        <div class="text-rose-400">Out: ${item.moneyOut.toLocaleString('id-ID')}</div>
+                    </td>
+                    <td class="p-4 text-center">
+                        <button onclick="deleteData('${key}')" class="btn-delete">Hapus</button>
+                    </td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
+    }
+
+    // Update Header Keuangan
+    document.getElementById('totalIn').innerText = `Rp ${totalModal.toLocaleString('id-ID')}`;
+    document.getElementById('totalOut').innerText = `Rp ${totalUangKeluar.toLocaleString('id-ID')}`;
+    document.getElementById('totalProfit').innerText = `Rp ${(totalModal - totalUangKeluar).toLocaleString('id-ID')}`;
+});
