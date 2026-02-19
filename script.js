@@ -79,13 +79,29 @@ function renderData(snapshot) {
             const mIn = item.moneyIn || 0;
             const mOut = item.moneyOut || 0;
 
-            // --- GLOBAL ACCOUNTING (Dihitung dari seluruh riwayat agar saldo akurat) ---
-            if (name.includes("ISI MODAL")) sisaModal += mIn;
-            else if (name.includes("LABA") && name.includes("UANG")) uangLaba += mIn;
-            else if (name.includes("TARIK") && name.includes("LABA")) { uangLaba -= mOut; sisaModal += mOut; }
+            // --- GLOBAL ACCOUNTING (Logika Perhitungan Baru) ---
+            if (name.includes("ISI MODAL")) {
+                sisaModal += mIn;
+            } 
+            else if (name.includes("UANG LABA (PENJUALAN)")) {
+                uangLaba += mIn;
+            } 
+            else if (name.includes("TARIK UANG LABA")) {
+                // Logika: Laba berkurang, Modal bertambah (untuk diputar kembali)
+                // mOut di sini adalah jumlah yang ditarik dari laba
+                uangLaba -= mOut; 
+                sisaModal += mOut; 
+            } 
             else { 
-                if (mOut > 0) { sisaModal -= mOut; totalPengeluaran += mOut; } 
-                if (mIn > 0) sisaModal += mIn; 
+                // Untuk transaksi belanja barang
+                if (mOut > 0) { 
+                    sisaModal -= mOut; 
+                    totalPengeluaran += mOut; 
+                } 
+                // Untuk pemasukan lain-lain jika ada
+                if (mIn > 0) {
+                    sisaModal += mIn;
+                }
             }
 
             // STOK
@@ -223,3 +239,127 @@ noteEditor.addEventListener('paste', (e) => {
     const text = e.clipboardData.getData('text/plain');
     document.execCommand('insertText', false, text);
 });
+
+// --- SISTEM CATATAN DIGITAL PRO ---
+const liveNoteRef = db.ref('live_note'); // Untuk real-time sync
+const archiveRef = db.ref('archived_notes'); // Untuk simpan permanen
+const editor = document.getElementById('digitalNote');
+
+// 1. Sinkronisasi Real-time (Sesuai permintaan Anda)
+editor.addEventListener('input', () => {
+    liveNoteRef.set(editor.innerHTML);
+});
+
+liveNoteRef.on('value', (snap) => {
+    const content = snap.val();
+    if (content !== null && content !== editor.innerHTML) {
+        editor.innerHTML = content;
+    }
+});
+
+// 2. Fitur Simpan ke Arsip (Klik Save)
+document.getElementById('btnSaveNote').onclick = function() {
+    const content = editor.innerHTML;
+    if (editor.innerText.trim() === "") return alert("Catatan kosong!");
+
+    archiveRef.push({
+        content: content,
+        timestamp: Date.now(),
+        preview: editor.innerText.substring(0, 30) + "..."
+    }).then(() => {
+        alert("Catatan berhasil diarsipkan!");
+    });
+};
+
+// 3. Menampilkan Daftar Arsip
+// Fungsi untuk merender daftar arsip dengan tombol hapus
+archiveRef.on('value', (snap) => {
+    const list = document.getElementById('archiveList');
+    list.innerHTML = "";
+    const data = snap.val();
+    
+    if (data) {
+        Object.keys(data).reverse().forEach(key => {
+            const item = data[key];
+            const d = new Date(item.timestamp);
+            const dateStr = `${d.getDate()}/${d.getMonth()+1} ${d.getHours()}:${d.getMinutes()}`;
+            
+            // Container
+            const container = document.createElement('div');
+            container.className = "archive-item-container relative group";
+            container.id = `arch-${key}`;
+
+            // Button Arsip (Untuk Buka Catatan)
+            const btnOpen = document.createElement('button');
+            btnOpen.className = "archive-item pr-10"; // Beri ruang di kanan untuk tombol hapus
+            btnOpen.innerHTML = `
+                <span class="date">${dateStr}</span>
+                <span class="preview">${item.preview}</span>
+            `;
+            btnOpen.onclick = () => {
+                if(confirm("Buka catatan ini?")) {
+                    editor.innerHTML = item.content;
+                    liveNoteRef.set(item.content);
+                }
+            };
+
+            // Button Hapus (Ikon Sampah)
+            const btnDel = document.createElement('button');
+            btnDel.className = "btn-delete-archive";
+            btnDel.innerHTML = `<i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>`;
+            btnDel.onclick = (e) => {
+                e.stopPropagation(); // Agar tidak memicu btnOpen
+                if(confirm("Hapus catatan ini dari arsip?")) {
+                    const element = document.getElementById(`arch-${key}`);
+                    element.classList.add('fade-out'); // Jalankan animasi
+                    setTimeout(() => {
+                        archiveRef.child(key).remove();
+                    }, 400);
+                }
+            };
+
+            container.appendChild(btnOpen);
+            container.appendChild(btnDel);
+            list.appendChild(container);
+        });
+        // Render ulang ikon lucide
+        lucide.createIcons();
+    } else {
+        list.innerHTML = `<p class="text-[9px] text-slate-400 italic">Belum ada arsip.</p>`;
+    }
+});
+
+// 4. Tombol Baru (Clear Editor)
+document.getElementById('btnNewNote').onclick = () => {
+    if(confirm("Mulai catatan baru?")) {
+        editor.innerHTML = "";
+        liveNoteRef.set("");
+    }
+};
+
+// Editor Toolbar Function
+function execCmd(command, value = null) {
+    document.execCommand(command, false, value);
+    editor.focus();
+    liveNoteRef.set(editor.innerHTML);
+}
+
+function toggleArsip() {
+    const sidebar = document.getElementById('sidebarArsip');
+    sidebar.classList.toggle('hidden');
+    sidebar.classList.toggle('sidebar-open');
+}
+
+// Tambahkan ini di dalam bagian penanganan klik arsip agar menu otomatis tertutup setelah memilih di HP
+// Di dalam archiveRef.on('value', ...) bagian btnOpen.onclick:
+btnOpen.onclick = () => {
+    if(confirm("Buka catatan ini?")) {
+        editor.innerHTML = item.content;
+        liveNoteRef.set(item.content);
+        
+        // Tutup sidebar jika sedang di HP
+        if (window.innerWidth < 768) {
+            toggleArsip();
+        }
+    }
+};
