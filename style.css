@@ -40,31 +40,41 @@ h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
 }
 
 /* Toolbar Button Style */
+/* CSS MURNI UNTUK CATATAN - GANTIKAN YANG @APPLY */
 .tool-btn {
-    width: 2rem; /* 8 dalam tailwind */
-    height: 2rem;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: white;
+    background-color: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 0.5rem;
-    font-size: 0.75rem;
-    transition: all 0.2s;
+    border-radius: 8px;
+    font-size: 12px;
     cursor: pointer;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
 }
 
 .tool-btn:hover {
-    background-color: #eef2ff; /* indigo-50 */
-    color: #4f46e5; /* indigo-600 */
+    background-color: #f5f3ff;
+    color: #4f46e5;
     border-color: #c7d2fe;
 }
 
-/* Placeholder untuk catatan kosong */
-#digitalNote:empty:before {
-    content: "Ketik catatan kebutuhan di sini...";
-    color: #94a3b8;
+#digitalNote {
+    min-height: 200px;
+    padding: 16px;
+    border: 2px dashed #e2e8f0;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    outline: none;
+    background-color: #ffffff;
+}
+
+#digitalNote:focus {
+    border-color: #818cf8;
+    background-color: #fafafa;
 }
 
 /* Pengaturan Teks di dalam Editor */
@@ -81,3 +91,140 @@ h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
 /* Menyesuaikan tampilan list di dalam catatan */
 #digitalNote ul { list-style-type: disc; padding-left: 20px; }
 #digitalNote ol { list-style-type: decimal; padding-left: 20px; }
+
+/* Sidebar Arsip Item */
+.archive-item {
+    padding: 0.75rem;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: block;
+    width: 100%;
+    text-align: left;
+}
+
+.archive-item:hover {
+    border-color: #818cf8;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.archive-item .date {
+    display: block;
+    font-size: 8px;
+    color: #94a3b8;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.05em;
+}
+
+.archive-item .preview {
+    display: block;
+    font-size: 10px;
+    color: #475569;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+}
+
+/* Toolbar Buttons */
+.tool-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tool-btn:hover {
+    background-color: #f5f3ff;
+    color: #4f46e5;
+    border-color: #c7d2fe;
+}
+
+/* Scrollbar halus untuk sidebar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+/* Container untuk item arsip agar posisi tombol bisa diatur */
+.archive-item-container {
+    position: relative;
+    margin-bottom: 0.5rem;
+}
+
+/* Tombol hapus ikon sampah */
+.btn-delete-archive {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%) scale(0.8);
+    background-color: #fee2e2;
+    color: #ef4444;
+    padding: 6px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    opacity: 0; /* Sembunyi secara default */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animasi muncul saat hover pada container */
+.archive-item-container:hover .btn-delete-archive {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+}
+
+.btn-delete-archive:hover {
+    background-color: #ef4444;
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Animasi saat item dihapus */
+.fade-out {
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 0.4s ease;
+}
+
+/* Sidebar aktif di HP */
+.sidebar-open {
+    display: block !important;
+    position: relative;
+    z-index: 40;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Penyesuaian tombol hapus agar lebih mudah ditekan di HP */
+@media (max-width: 768px) {
+    .btn-delete-archive {
+        opacity: 1 !important; /* Selalu muncul di HP karena tidak ada hover mouse */
+        transform: translateY(-50%) scale(1) !important;
+        right: 4px;
+    }
+    .archive-item {
+        padding-right: 40px; /* Ruang ekstra untuk jari */
+    }
+}
